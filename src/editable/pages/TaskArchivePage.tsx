@@ -9,6 +9,7 @@ import { taskPageMetadata } from '@/config/site.content'
 import { taskPageVoices } from '@/editable/content/task-pages.content'
 import { EditableSiteShell } from '@/editable/shell/EditableSiteShell'
 import { getTaskTheme, taskThemeStyle } from '@/editable/theme/task-themes'
+import Ads from '@/lib/ads/ads'
 
 export const revalidate = 3
 
@@ -139,6 +140,12 @@ export function TaskArchiveView({ task, posts, pagination, category, basePath }:
           </div>
         </header>
 
+        {task === 'profile' ? (
+          <div className="mx-auto max-w-[var(--editable-container)] px-6 pt-10 lg:px-8">
+            <Ads slot="header" size="leaderboard" showLabel eager className="mx-auto w-full" />
+          </div>
+        ) : null}
+
         <section className="mx-auto max-w-[var(--editable-container)] px-6 py-16 sm:py-20 lg:px-8">
           {posts.length ? (
             <div className={taskGrid[task]}>
@@ -222,22 +229,30 @@ function RatingLine({ post, center = false }: { post: SitePost; center?: boolean
 function ArticleArchiveCard({ post, href, index }: { post: SitePost; href: string; index: number }) {
   const image = getImage(post)
   const category = getCategory(post, 'Article')
+
   return (
-    <Link href={href} className={`${cardBase} overflow-hidden`}>
-      <div className="aspect-[16/10] overflow-hidden bg-[var(--tk-raised)]">
-        <img src={image} alt="" className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]" />
-      </div>
-      <div className="p-6 sm:p-7">
-        <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-[var(--tk-accent)]">
-          <span>{category}</span>
-          <span className="text-[var(--tk-muted)]">· No. {String(index + 1).padStart(2, '0')}</span>
+    <>
+      {index === 6 ? (
+        <div className="md:col-span-2 xl:col-span-3">
+          <Ads slot="in-feed" size="billboard" index={index} showLabel className="mx-auto w-full" />
         </div>
-        <h2 className="editable-display mt-3 text-2xl font-semibold leading-snug tracking-[-0.02em]">{post.title}</h2>
-        <RatingLine post={post} />
-        <p className="mt-3 line-clamp-2 text-[15px] leading-7 text-[var(--tk-muted)]">{getSummary(post)}</p>
-        <CardArrow label="Read article" />
-      </div>
-    </Link>
+      ) : null}
+      <Link href={href} className={`${cardBase} overflow-hidden`}>
+        <div className="aspect-[16/10] overflow-hidden bg-[var(--tk-raised)]">
+          <img src={image} alt="" className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]" />
+        </div>
+        <div className="p-6 sm:p-7">
+          <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-[var(--tk-accent)]">
+            <span>{category}</span>
+            <span className="text-[var(--tk-muted)]">· No. {String(index + 1).padStart(2, '0')}</span>
+          </div>
+          <h2 className="editable-display mt-3 text-2xl font-semibold leading-snug tracking-[-0.02em]">{post.title}</h2>
+          <RatingLine post={post} />
+          <p className="mt-3 line-clamp-2 text-[15px] leading-7 text-[var(--tk-muted)]">{getSummary(post)}</p>
+          <CardArrow label="Read article" />
+        </div>
+      </Link>
+    </>
   )
 }
 
