@@ -18,6 +18,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600;700;800&family=Syne:wght@500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@400;500;600;700&display=swap');
 
+:root {
+  --slot4-page-bg: #0B0909;
+  --slot4-page-text: #B5B9F0;
+  --slot4-muted-text: rgba(181, 185, 240, 0.68);
+  --slot4-surface-bg: #121817;
+  --slot4-warm: #2E4540;
+  --slot4-media-bg: #2E4540;
+  --slot4-accent: #408175;
+  --slot4-accent-fill: #408175;
+  --slot4-accent-soft: rgba(64, 129, 117, 0.22);
+  --slot4-on-accent: #0B0909;
+  --editable-nav-bg: #0B0909;
+  --editable-nav-text: #B5B9F0;
+  --editable-footer-bg: #0B0909;
+  --editable-footer-text: #B5B9F0;
+  --editable-border: rgba(181, 185, 240, 0.18);
+  --editable-cta-bg: #B5B9F0;
+  --editable-cta-text: #0B0909;
+  --editable-container: 1240px;
+  --slot4-body-gradient:
+    radial-gradient(circle at 14% 10%, rgba(181, 185, 240, 0.16), transparent 24rem),
+    radial-gradient(circle at 88% 18%, rgba(64, 129, 117, 0.18), transparent 22rem),
+    linear-gradient(180deg, #0B0909 0%, #2E4540 48%, #0B0909 100%);
+}
+
 body {
   background-color: var(--slot4-page-bg) !important;
   color: var(--slot4-page-text) !important;
@@ -25,9 +50,8 @@ body {
 }
 
 .editable-site-root {
-  /* Yelp-style clean sans, used for both display and body. */
-  --editable-font-display: 'Inter', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
-  --editable-font-body: 'Inter', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --editable-font-display: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --editable-font-body: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
   /* Premium easing curve used across every hover + transition. */
   --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
   font-family: var(--editable-font-body);
@@ -96,6 +120,25 @@ body {
   font-family: var(--editable-font-body);
 }
 
+.editable-site-root .bg-white,
+.editable-site-root [class*="bg-white/"] {
+  background-color: #121817 !important;
+}
+
+.editable-site-root .text-white,
+.editable-site-root [class*="text-white/"] {
+  color: #B5B9F0 !important;
+}
+
+.editable-site-root .border-white,
+.editable-site-root [class*="border-white/"] {
+  border-color: rgba(181, 185, 240, 0.18) !important;
+}
+
+.editable-site-root .text-black {
+  color: #0B0909 !important;
+}
+
 ::selection {
   background: color-mix(in oklab, var(--slot4-accent-fill) 28%, transparent);
   color: var(--slot4-page-text);
@@ -120,4 +163,73 @@ body {
 
 .article-content a {
   color: var(--slot4-accent-fill);
+}
+
+@keyframes editable-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes editable-float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(-6deg);
+  }
+  50% {
+    transform: translate3d(0, -14px, 0) rotate(5deg);
+  }
+}
+
+@keyframes editable-soft-pulse {
+  0%, 100% {
+    opacity: 0.62;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+.editable-marquee {
+  animation: editable-marquee 34s linear infinite;
+}
+
+.editable-marquee-slow {
+  animation: editable-marquee 48s linear infinite reverse;
+}
+
+.editable-float {
+  animation: editable-float 6s ease-in-out infinite;
+}
+
+.editable-float-delayed {
+  animation: editable-float 7.5s ease-in-out infinite;
+  animation-delay: -2.5s;
+}
+
+.editable-pulse {
+  animation: editable-soft-pulse 4.2s ease-in-out infinite;
+}
+
+.editable-card-hover {
+  transition: transform 420ms var(--ease-premium), box-shadow 420ms var(--ease-premium), border-color 420ms var(--ease-premium);
+}
+
+.editable-card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 54px rgba(181, 185, 240, 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editable-marquee,
+  .editable-marquee-slow,
+  .editable-float,
+  .editable-float-delayed,
+  .editable-pulse {
+    animation: none;
+  }
 }

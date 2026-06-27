@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Fragment } from 'react'
 import { ArrowRight, Filter, Search } from 'lucide-react'
 import { buildPageMetadata } from '@/lib/seo'
 import { fetchSiteFeed } from '@/lib/site-connector'
@@ -9,6 +10,7 @@ import { SITE_CONFIG, type TaskKey } from '@/lib/site-config'
 import type { SitePost } from '@/lib/site-connector'
 import { EditableSiteShell } from '@/editable/shell/EditableSiteShell'
 import { pagesContent } from '@/editable/content/pages.content'
+import Ads from '@/lib/ads/ads'
 
 export const revalidate = 3
 
@@ -21,6 +23,17 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const stripHtml = (value: string) => value.replace(/<[^>]*>/g, ' ')
+const plainText = (value: unknown) => typeof value === 'string'
+  ? stripHtml(value)
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&amp;/gi, '&')
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;|&apos;/gi, "'")
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>')
+      .replace(/\s+/g, ' ')
+      .trim()
+  : ''
 const compactText = (value: unknown) => typeof value === 'string' ? stripHtml(value).replace(/\s+/g, ' ').trim().toLowerCase() : ''
 const getContent = (post: SitePost) => post.content && typeof post.content === 'object' ? post.content as Record<string, unknown> : {}
 const getImage = (post: SitePost) => {
@@ -30,7 +43,7 @@ const getImage = (post: SitePost) => {
   return media || compactRaw(content.featuredImage) || compactRaw(content.image) || compactRaw(content.thumbnail) || images || ''
 }
 const compactRaw = (value: unknown) => typeof value === 'string' ? value.trim() : ''
-const summaryOf = (post: SitePost) => post.summary || compactRaw(getContent(post).description) || compactRaw(getContent(post).excerpt) || ''
+const summaryOf = (post: SitePost) => plainText(post.summary || compactRaw(getContent(post).description) || compactRaw(getContent(post).excerpt) || '')
 
 const matches = (post: SitePost, query: string, category: string, task: string) => {
   const content = getContent(post)
@@ -54,6 +67,7 @@ function SearchResultCard({ post, index }: { post: SitePost; index: number }) {
   const href = `${taskRoute || `/${task || 'article'}`}/${post.slug}`
   const image = getImage(post)
   const summary = summaryOf(post)
+  const title = plainText(post.title) || post.title
   const taskLabel = SITE_CONFIG.tasks.find((item) => item.key === task)?.label || 'Post'
   const strong = index % 5 === 0
 
@@ -68,7 +82,7 @@ function SearchResultCard({ post, index }: { post: SitePost; index: number }) {
       ) : null}
       <div className="p-5 sm:p-6">
         {!image ? <span className="rounded-full bg-[var(--editable-page-text,#211713)] px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-white">{taskLabel}</span> : null}
-        <h2 className="mt-4 line-clamp-3 text-2xl font-black leading-[0.95] tracking-[-0.06em] text-[var(--editable-page-text,#211713)]">{post.title}</h2>
+        <h2 className="mt-4 line-clamp-3 text-2xl font-black leading-[0.95] tracking-[-0.06em] text-[var(--editable-page-text,#211713)]">{title}</h2>
         {summary ? <p className="mt-4 line-clamp-3 text-sm font-semibold leading-7 text-[var(--editable-page-text,#211713)]/65">{summary}</p> : null}
         <span className="mt-5 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] opacity-60 group-hover:opacity-100">Open result <ArrowRight className="h-4 w-4" /></span>
       </div>
@@ -128,7 +142,16 @@ export default async function SearchPage({ searchParams }: { searchParams?: Prom
 
           {results.length ? (
             <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {results.map((post, index) => <SearchResultCard key={post.id || post.slug} post={post} index={index} />)}
+              {results.map((post, index) => (
+                <Fragment key={post.id || post.slug}>
+                  {index === 6 ? (
+                    <div className="md:col-span-2 xl:col-span-3">
+                      <Ads slot="in-feed" size="billboard" index={index} showLabel className="mx-auto w-full" />
+                    </div>
+                  ) : null}
+                  <SearchResultCard post={post} index={index} />
+                </Fragment>
+              ))}
             </div>
           ) : (
             <div className="mt-8 rounded-[2rem] border border-dashed border-[var(--editable-border)] bg-white/70 p-10 text-center">
