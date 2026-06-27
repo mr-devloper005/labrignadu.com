@@ -1,5 +1,4 @@
 import { EditableTaskArchiveRoute, taskMetadata } from '@/editable/pages/TaskArchivePage'
-
 export const revalidate = 3
 
 export const generateMetadata = () => taskMetadata('article', '/article')
